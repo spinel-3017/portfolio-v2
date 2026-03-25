@@ -20,7 +20,10 @@
     <meta name="robots" content="index, follow" />
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://portfolio-v2-three-peach-65.vercel.app" />
+    <meta
+      property="og:url"
+      content="https://portfolio-v2-three-peach-65.vercel.app"
+    />
     <meta
       property="og:title"
       content="Ugochukwu | Front-End Web Developer Portfolio"
@@ -35,7 +38,10 @@
     />
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://portfolio-v2-three-peach-65.vercel.app" />
+    <meta
+      property="twitter:url"
+      content="https://portfolio-v2-three-peach-65.vercel.app"
+    />
     <meta
       property="twitter:title"
       content="Ugochukwu | Front-End Web Developer Portfolio"
@@ -69,11 +75,6 @@
     <link rel="manifest" href="assets/favicon/site.webmanifest" />
     <title>Ugochukwu | Web Developer</title>
     <link rel="stylesheet" href="assets/styles/style.css" />
-    <script
-      type="text/javascript"
-      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
-      defer
-    ></script>
   </head>
   <body>
     <div id="container">
@@ -246,7 +247,7 @@
                 <img
                   class="hulk-pic test-pic"
                   src="assets/images/blank-profile-compressed.jpeg"
-                  alt="Photo of 0. Chibuikem"
+                  alt="Photo of O. Chibuikem"
                   loading="lazy"
                 />
                 <h3 class="test-bottom-head">O. Chibuikem, Course Mate</h3>
@@ -455,14 +456,6 @@
           observer.observe(el);
         });
 
-        // ---- EmailJS initialization ----
-        if (typeof emailjs !== "undefined") {
-          emailjs.init("r3TA3bPULp_Muw8YC");
-          // NOTE: For production, move this key to environment variables.
-        } else {
-          console.log("EmailJS not loaded");
-        }
-
         const form = document.getElementById("contact-form");
         const submitBtn = form?.querySelector('input[type="submit"]');
 
@@ -509,36 +502,41 @@
               submitBtn.value = "Sending...";
             }
 
-            if (typeof emailjs !== "undefined") {
-              emailjs
-                .sendForm("service_4atrvrv", "template_g1jduov", this)
-                .then(() => {
+            // Collect form data
+            const formData = {
+              email: document.getElementById("email").value.trim(),
+              mobile: document.getElementById("mobile").value.trim(),
+              message: document.getElementById("message").value.trim(),
+            };
+
+            // Send to your Vercel function
+            fetch("/api/send", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+            })
+              .then(async (response) => {
+                const data = await response.json();
+                if (response.ok) {
                   showMessage(
                     "Message sent successfully! I'll get back to you soon.",
                     false,
                   );
                   form.reset();
-                })
-                .catch((error) => {
-                  console.log("FAILED...", error);
-                  showMessage(
-                    "Something went wrong. Please try again later.",
-                    true,
-                  );
-                })
-                .finally(() => {
-                  if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.value = "Submit >";
-                  }
-                });
-            } else {
-              showMessage("Email service not available at the moment.", true);
-              if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.value = "Submit >";
-              }
-            }
+                } else {
+                  showMessage(data.error || "Something went wrong.", true);
+                }
+              })
+              .catch((error) => {
+                console.error("Fetch error:", error);
+                showMessage("Network error. Please try again later.", true);
+              })
+              .finally(() => {
+                if (submitBtn) {
+                  submitBtn.disabled = false;
+                  submitBtn.value = "Submit >";
+                }
+              });
           });
         }
       });
