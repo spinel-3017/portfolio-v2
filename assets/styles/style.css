@@ -626,6 +626,7 @@ nav > a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* width: fit-content; */
 }
 .case-content {
   display: flex;
@@ -1009,15 +1010,17 @@ nav {
   .hero-btn {
     width: 20rem;
     height: 5rem;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
+    align-self: center;
   }
 
 
 
 
 
-  /* #CASE {
-  } */
+  #CASE {
+    padding: 0.6rem;
+  }
   /* .case-top {
     margin-top: 0rem;
   } */
@@ -1036,6 +1039,14 @@ nav {
   }
   .case-pic {
     width: 80vw;
+  }
+  .case-section {
+    width: fit-content;
+  }
+  .case-bottom {
+    display: flex;
+    justify-content: center;
+    padding: 0.6rem;
   }
 
 
@@ -1066,8 +1077,9 @@ nav {
     flex-direction: column;
     width: 100%;
   }
-  /* .recent-bottom-card {
-  } */
+  .recent-bottom-card {
+    padding: 1rem;
+  }
   .recent-top-text {
     width: 80%;
   }
