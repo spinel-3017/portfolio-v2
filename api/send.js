@@ -1,41 +1,47 @@
 export default async function handler(req, res) {
-  // Only allow POST requests
+  console.log('Request received', req.method, req.body);
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { email, mobile, message } = req.body;
 
-  // Basic validation (you can match what you have in frontend)
   if (!email || !mobile || !message) {
+    console.log('Validation failed: missing fields');
     return res.status(400).json({ error: 'Missing fields' });
   }
 
-  // Your EmailJS credentials (these will come from environment variables)
   const serviceId = 'service_4atrvrv';
   const templateId = 'template_g1jduov';
   const publicKey = process.env.EMAILJS_PUBLIC_KEY;
 
-  // Prepare the data for EmailJS API
+  console.log('EmailJS key exists?', !!publicKey);
+  console.log('Service ID:', serviceId, 'Template ID:', templateId);
+
+  if (!publicKey) {
+    console.error('EMAILJS_PUBLIC_KEY not set in environment');
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+
   const emailjsData = {
     service_id: serviceId,
     template_id: templateId,
     user_id: publicKey,
-    template_params: {
-      email: email,
-      mobile: mobile,
-      message: message,
-    },
+    template_params: { email, mobile, message },
   };
 
   try {
+    console.log('Sending to EmailJS...');
     const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(emailjsData),
     });
 
+    console.log('EmailJS response status:', response.status);
     if (response.ok) {
+      console.log('Email sent successfully');
       res.status(200).json({ success: true });
     } else {
       const errorText = await response.text();
